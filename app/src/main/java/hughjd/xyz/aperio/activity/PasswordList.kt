@@ -12,11 +12,15 @@ import android.widget.ListView
 import android.widget.TextView
 import hughjd.xyz.aperio.Development
 import hughjd.xyz.aperio.R
+import hughjd.xyz.aperio.password.Password
 import hughjd.xyz.aperio.password.PasswordListAdapter
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 
 class PasswordList : AppCompatActivity() {
 
-    private val passwordList = Development.testPasswords().toMutableList()
+    private val passwordList = mutableListOf<Password>()
 
     private lateinit var listView: ListView
 
@@ -32,6 +36,7 @@ class PasswordList : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_password_list)
         title = "All Passwords"
+        registerPasswordListener()
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
@@ -50,6 +55,9 @@ class PasswordList : AppCompatActivity() {
 
         adapter = PasswordListAdapter(getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater, passwordList)
         listView.adapter = adapter
+
+        // todo remove
+        injectTestData()
     }
 
     fun onNewPassword() {
@@ -65,6 +73,28 @@ class PasswordList : AppCompatActivity() {
     }
 
     fun showPasswordOptions() {
+
+    }
+
+    private fun registerPasswordListener() {
+        Aperio.db?.passwordDao()?.getAll()
+            ?.subscribeOn(Schedulers.io())
+            ?.observeOn(AndroidSchedulers.mainThread())
+            ?.subscribe { listOfPasswords ->
+                passwordList.clear()
+                passwordList.addAll(listOfPasswords)
+                adapter.notifyDataSetChanged()
+            }
+    }
+
+    // todo remove before release!
+    private fun injectTestData() {
+        Single.fromCallable {
+            Aperio.db?.passwordDao()?.deleteAll()
+            Aperio.db?.passwordDao()?.insertAll(Development.testPasswords())
+        }
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread()).subscribe()
 
     }
 }
