@@ -10,6 +10,7 @@
         android:layout_height="50sp"
         android:gravity="center"
         android:textStyle="italic"
-        android:text="Search results for 'mail'" />
+        android:text="Search results for 'mail'"
+        android:visibility="gone" />
 
 </android.support.constraint.ConstraintLayout>

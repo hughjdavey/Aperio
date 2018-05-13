@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Aperio</string>
+    <string name="menu_clear_search">Clear Search</string>
+    <string name="menu_generate_password">Generate Password</string>
+    <string name="menu_sort_alpha">Alphabetical</string>
+    <string name="menu_sort_zeta">Reverse Alphabetical</string>
+    <string name="menu_sort_new">Newest First</string>
+    <string name="menu_sort_old">Oldest First</string>
+    <string name="search_text_view_template">Showing results for \'%s\'</string>
 </resources>

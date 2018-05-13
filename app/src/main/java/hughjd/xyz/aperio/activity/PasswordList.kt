@@ -6,10 +6,14 @@ import android.support.constraint.ConstraintLayout
 import android.support.design.widget.FloatingActionButton
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
+import android.text.InputType
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.ListView
 import android.widget.TextView
+import com.afollestad.materialdialogs.MaterialDialog
 import hughjd.xyz.aperio.Development
 import hughjd.xyz.aperio.R
 import hughjd.xyz.aperio.password.Password
@@ -19,8 +23,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
 class PasswordList : AppCompatActivity() {
-
-    private val passwordList = mutableListOf<Password>()
 
     private lateinit var listView: ListView
 
@@ -45,7 +47,7 @@ class PasswordList : AppCompatActivity() {
         fabNewPassword.setOnClickListener { onNewPassword() }
 
         val fabSearch = findViewById<FloatingActionButton>(R.id.fab_search)
-        fabSearch.setOnClickListener { onSearch() }
+        fabSearch.setOnClickListener { onClickSearch() }
 
         listView = findViewById(R.id.passwords_view)
 
@@ -53,18 +55,57 @@ class PasswordList : AppCompatActivity() {
         searchTextView = searchTextLayout.findViewById(R.id.search_text_view)
         listView.addHeaderView(searchTextLayout, null, false)
 
-        adapter = PasswordListAdapter(getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater, passwordList)
+        adapter = PasswordListAdapter(getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater)
         listView.adapter = adapter
 
         // todo remove
-        injectTestData()
+        //injectTestData()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_password_list, menu)
+        clearSearch = menu.findItem(R.id.clear_search)
+        clearSearch.setOnMenuItemClickListener { _ -> onClearSearch() }
+        clearSearch.isEnabled = false
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val sort = when (item.itemId) {
+            R.id.sort_alpha -> Password.SORT_ALPHA
+            R.id.sort_zeta -> Password.SORT_ZETA
+            R.id.sort_new -> Password.SORT_NEW
+            R.id.sort_old -> Password.SORT_OLD
+            else -> return super.onOptionsItemSelected(item)
+        }
+
+        adapter.sortPasswords(sort)
+        return true
+    }
+
+    private fun onClickSearch() {
+        MaterialDialog.Builder(this)
+            .title("Search")
+            .content("Search for a password by partial name")
+            .inputType(InputType.TYPE_CLASS_TEXT)
+            .input("", "", { _, input -> onApplySearch(input) }).show()
+    }
+
+    private fun onApplySearch(input: CharSequence) {
+        adapter.filterByName(input.toString())
+        clearSearch.isEnabled = true
+        searchTextView.text = getString(R.string.search_text_view_template, input)
+        searchTextView.visibility = View.VISIBLE
+    }
+
+    private fun onClearSearch(): Boolean {
+        adapter.clearFilters()
+        clearSearch.isEnabled = false
+        searchTextView.visibility = View.GONE
+        return true
     }
 
     fun onNewPassword() {
-
-    }
-
-    fun onSearch() {
 
     }
 
@@ -81,9 +122,7 @@ class PasswordList : AppCompatActivity() {
             ?.subscribeOn(Schedulers.io())
             ?.observeOn(AndroidSchedulers.mainThread())
             ?.subscribe { listOfPasswords ->
-                passwordList.clear()
-                passwordList.addAll(listOfPasswords)
-                adapter.notifyDataSetChanged()
+                adapter.updatePasswords(listOfPasswords)
             }
     }
 
