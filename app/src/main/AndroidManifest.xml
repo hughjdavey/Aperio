@@ -22,5 +22,9 @@
             android:name=".activity.PasswordList"
             android:theme="@style/AppTheme.NoActionBar"/>
 
+        <activity
+            android:name=".activity.PasswordView"
+            android:theme="@style/AppTheme"/>
+
     </application>
 </manifest>

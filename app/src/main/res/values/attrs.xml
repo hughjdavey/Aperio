@@ -1,0 +1,9 @@
+<resources>
+    <declare-styleable name="PasswordFieldView">
+        <attr name="name" format="string" />
+        <attr name="value" format="string" />
+        <attr name="editable" format="boolean" />
+        <attr name="android:inputType"/>
+        <attr name="android:ems" />
+    </declare-styleable>
+</resources>

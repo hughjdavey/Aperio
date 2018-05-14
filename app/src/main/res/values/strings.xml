@@ -7,4 +7,5 @@
     <string name="menu_sort_new">Newest First</string>
     <string name="menu_sort_old">Oldest First</string>
     <string name="search_text_view_template">Showing results for \'%s\'</string>
+    <string name="hidden_password">**********</string>
 </resources>

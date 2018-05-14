@@ -9,6 +9,7 @@ data class Password(@PrimaryKey(autoGenerate = true) val id: Long, val name: Str
                     val email: String, val url: String, val username: String) : Serializable {
 
     companion object {
+
         val SORT_ALPHA: java.util.Comparator<Password> = Comparator { p1, p2 -> p1.name.compareTo(p2.name) }
 
         val SORT_ZETA: java.util.Comparator<Password> = Comparator { p1, p2 -> p1.name.compareTo(p2.name) * -1 }
@@ -16,5 +17,12 @@ data class Password(@PrimaryKey(autoGenerate = true) val id: Long, val name: Str
         val SORT_NEW: java.util.Comparator<Password> = Comparator { p1, p2 -> java.lang.Long.compare(p1.id, p2.id) * -1 }
 
         val SORT_OLD: java.util.Comparator<Password> = Comparator { p1, p2 -> java.lang.Long.compare(p1.id, p2.id) }
+
+        // key used to pass password in bundle to view or edit activity
+        const val BUNDLE_KEY = "password_in_bundle"
+
+        fun empty(): Password {
+            return Password(0L, "", "", "", "", "")
+        }
     }
 }

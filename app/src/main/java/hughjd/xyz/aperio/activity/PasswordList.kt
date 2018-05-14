@@ -1,6 +1,7 @@
 package hughjd.xyz.aperio.activity
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
 import android.support.design.widget.FloatingActionButton
@@ -58,6 +59,9 @@ class PasswordList : AppCompatActivity() {
         adapter = PasswordListAdapter(getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater)
         listView.adapter = adapter
 
+        // click listeners. subtract 1 from position to account for the search text headerview in the first position (even if not shown)
+        listView.setOnItemClickListener { _, _, position, _ -> onViewPassword(adapter.getItem(position - 1)) }
+
         // todo remove
         //injectTestData()
     }
@@ -105,11 +109,13 @@ class PasswordList : AppCompatActivity() {
         return true
     }
 
-    fun onNewPassword() {
-
+    private fun onViewPassword(password: Password) {
+        val passwordViewIntent = Intent(this, PasswordView::class.java)
+        passwordViewIntent.putExtra(Password.BUNDLE_KEY, password)
+        startActivity(passwordViewIntent)
     }
 
-    fun viewPassword() {
+    fun onNewPassword() {
 
     }
 
