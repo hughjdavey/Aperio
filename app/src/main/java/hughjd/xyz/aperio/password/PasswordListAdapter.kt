@@ -56,4 +56,23 @@ class PasswordListAdapter(private val inflater: LayoutInflater) : BaseAdapter() 
         shownPasswords = allPasswords.toList()
         notifyDataSetChanged()
     }
+
+    fun deletePassword(password: Password) {
+        LAST_DELETED_PASSWORD = password
+        LAST_DELETED_INDEX = allPasswords.indexOf(password)
+
+        this.allPasswords.removeAt(LAST_DELETED_INDEX)
+        clearFilters()
+    }
+
+    fun revertLastDelete() {
+        this.allPasswords.add(LAST_DELETED_INDEX, LAST_DELETED_PASSWORD)
+        clearFilters()
+    }
+
+    companion object {
+
+        private var LAST_DELETED_INDEX = -1
+        private var LAST_DELETED_PASSWORD = Password.empty()
+    }
 }

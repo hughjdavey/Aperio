@@ -1,10 +1,12 @@
 package hughjd.xyz.aperio.activity
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
 import android.support.design.widget.FloatingActionButton
+import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.text.InputType
@@ -63,7 +65,7 @@ class PasswordList : AppCompatActivity() {
         listView.setOnItemClickListener { _, _, position, _ -> onViewPassword(adapter.getItem(position - 1)) }
 
         // todo remove
-        //injectTestData()
+        injectTestData()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -85,6 +87,17 @@ class PasswordList : AppCompatActivity() {
 
         adapter.sortPasswords(sort)
         return true
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == VIEW_PASSWORD_REQUEST && resultCode == Activity.RESULT_OK) {
+            val deletedPassword = data?.extras?.getSerializable(Password.BUNDLE_KEY) as Password? ?: Password.empty()
+            adapter.deletePassword(deletedPassword)
+
+            Snackbar.make(listView, R.string.deleted_password, Snackbar.LENGTH_LONG)
+                    .setAction(R.string.undo) { adapter.revertLastDelete() }
+                    .show()
+        }
     }
 
     private fun onClickSearch() {
@@ -112,7 +125,7 @@ class PasswordList : AppCompatActivity() {
     private fun onViewPassword(password: Password) {
         val passwordViewIntent = Intent(this, PasswordView::class.java)
         passwordViewIntent.putExtra(Password.BUNDLE_KEY, password)
-        startActivity(passwordViewIntent)
+        startActivityForResult(passwordViewIntent, VIEW_PASSWORD_REQUEST)
     }
 
     fun onNewPassword() {
@@ -141,5 +154,10 @@ class PasswordList : AppCompatActivity() {
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread()).subscribe()
 
+    }
+
+    companion object {
+
+        private const val VIEW_PASSWORD_REQUEST = 1337
     }
 }

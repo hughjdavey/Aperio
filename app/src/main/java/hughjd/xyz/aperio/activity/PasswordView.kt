@@ -1,14 +1,17 @@
 package hughjd.xyz.aperio.activity
 
+import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
-import android.support.design.widget.FloatingActionButton
 import android.support.v7.app.AppCompatActivity
-import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.Toast
+import com.getbase.floatingactionbutton.FloatingActionButton
+import com.getbase.floatingactionbutton.FloatingActionsMenu
 import hughjd.xyz.aperio.R
 import hughjd.xyz.aperio.password.Password
 import hughjd.xyz.aperio.view.PasswordFieldView
@@ -44,8 +47,16 @@ class PasswordView : AppCompatActivity() {
         val copyPasswordButton = passwordField.findViewById<ImageButton>(R.id.copy_to_clipboard)
         copyPasswordButton.setOnClickListener { onCopy("password", passwordText) }
 
-        val editPasswordButton = findViewById<FloatingActionButton>(R.id.fab_edit_password);
-        editPasswordButton.setOnClickListener { onEdit(viewedPassword) }
+        // allow clicking anywhere to collapse the fab menu
+        val fabMenu = findViewById<FloatingActionsMenu>(R.id.view_password_fab_menu)
+        val frameLayout = findViewById<FrameLayout>(R.id.view_password_frame_layout)
+        frameLayout.setOnClickListener { fabMenu.collapse() }
+
+        // password edit and delete listeners
+        val fabEdit = findViewById<FloatingActionButton>(R.id.view_password_fab_edit)
+        fabEdit.setOnClickListener { onEdit(viewedPassword) }
+        val fabDelete = findViewById<FloatingActionButton>(R.id.view_password_fab_delete)
+        fabDelete.setOnClickListener { onDelete(viewedPassword) }
     }
 
     private fun onCopy(name: String, value: String) {
@@ -55,7 +66,15 @@ class PasswordView : AppCompatActivity() {
     }
 
     private fun onEdit(password: Password) {
+        Toast.makeText(this, "Editing and creating coming soon", Toast.LENGTH_SHORT).show()
         // todo
+    }
+
+    private fun onDelete(password: Password) {
+        val returnIntent = Intent()
+        returnIntent.putExtra(Password.BUNDLE_KEY, password)
+        setResult(Activity.RESULT_OK, returnIntent)
+        finish()
     }
 
     private fun initFields(viewedPassword: Password) {

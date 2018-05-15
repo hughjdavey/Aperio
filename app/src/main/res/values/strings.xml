@@ -8,4 +8,6 @@
     <string name="menu_sort_old">Oldest First</string>
     <string name="search_text_view_template">Showing results for \'%s\'</string>
     <string name="hidden_password">**********</string>
+    <string name="deleted_password">Password deleted</string>
+    <string name="undo">Undo</string>
 </resources>
