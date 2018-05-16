@@ -28,4 +28,15 @@ object PasswordGenerator {
             randomCharset.charset[randomIndex].toString()
         }.joinToString("")
     }
+
+    /**
+     * Transform a list of booleans (from user checking boxes) into a set of chartypes to sue
+     */
+    fun chartypes(vararg includeTypes: Boolean): Set<Chartype> {
+        return includeTypes
+                .zip(setOf(Chartype.LETTERS, Chartype.NUMBERS, Chartype.SYMBOLS))
+                .map { (first, second) -> if (first) second else null }
+                .filterNotNull()
+                .toSet()
+    }
 }

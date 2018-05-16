@@ -19,6 +19,10 @@
         </activity>
 
         <activity
+            android:name=".activity.PasswordEdit"
+            android:theme="@style/AppTheme"/>
+
+        <activity
             android:name=".activity.PasswordList"
             android:theme="@style/AppTheme.NoActionBar"/>
 

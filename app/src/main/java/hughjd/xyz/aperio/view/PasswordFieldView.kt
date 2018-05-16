@@ -2,19 +2,24 @@ package hughjd.xyz.aperio.view
 
 import android.content.Context
 import android.support.constraint.ConstraintLayout
-import android.text.InputType
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.TextView
 import hughjd.xyz.aperio.R
 
 class PasswordFieldView(context: Context, attrs: AttributeSet) : ConstraintLayout(context, attrs) {
 
     private val nameView: TextView
+
     private val valueView: TextView
+
     private val valueEdit: EditText
+
+    private val copyToClipboard: ImageButton
+
     private val editable: Boolean
 
     var value: String
@@ -36,6 +41,7 @@ class PasswordFieldView(context: Context, attrs: AttributeSet) : ConstraintLayou
         nameView = layout.findViewById(R.id.field_name)
         valueView = layout.findViewById(R.id.field_value_view)
         valueEdit = layout.findViewById(R.id.field_value_edit)
+        copyToClipboard = layout.findViewById(R.id.copy_to_clipboard)
 
         nameView.text = nameText
         valueView.text = valueText
@@ -44,6 +50,7 @@ class PasswordFieldView(context: Context, attrs: AttributeSet) : ConstraintLayou
         editable = styledAttrs.getBoolean(R.styleable.PasswordFieldView_editable, false)
         if (editable) {
             valueView.visibility = View.GONE
+            copyToClipboard.visibility = View.GONE
         }
         else {
             valueEdit.visibility = View.GONE

@@ -18,8 +18,6 @@ import hughjd.xyz.aperio.view.PasswordFieldView
 
 class PasswordView : AppCompatActivity() {
 
-    private lateinit var passwordText: String
-
     private lateinit var usernameField: PasswordFieldView
 
     private lateinit var emailField: PasswordFieldView
@@ -34,7 +32,6 @@ class PasswordView : AppCompatActivity() {
 
         val viewedPassword = intent?.extras?.getSerializable(Password.BUNDLE_KEY) as Password? ?: Password.empty()
         title = viewedPassword.name
-        passwordText = viewedPassword.password
         initFields(viewedPassword)
 
         // copy value to clipboard when copy button is pressed
@@ -45,7 +42,7 @@ class PasswordView : AppCompatActivity() {
 
         // needs special handling because value is '*********' and we don't want to copy that to clipboard
         val copyPasswordButton = passwordField.findViewById<ImageButton>(R.id.copy_to_clipboard)
-        copyPasswordButton.setOnClickListener { onCopy("password", passwordText) }
+        copyPasswordButton.setOnClickListener { onCopy("password", viewedPassword.password) }
 
         // allow clicking anywhere to collapse the fab menu
         val fabMenu = findViewById<FloatingActionsMenu>(R.id.view_password_fab_menu)
@@ -66,8 +63,9 @@ class PasswordView : AppCompatActivity() {
     }
 
     private fun onEdit(password: Password) {
-        Toast.makeText(this, "Editing and creating coming soon", Toast.LENGTH_SHORT).show()
-        // todo
+        val editPasswordIntent = Intent(this, PasswordEdit::class.java)
+        editPasswordIntent.putExtra(Password.BUNDLE_KEY, password)
+        startActivity(editPasswordIntent)
     }
 
     private fun onDelete(password: Password) {

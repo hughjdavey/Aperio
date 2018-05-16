@@ -136,8 +136,9 @@ class PasswordList : AppCompatActivity() {
         startActivityForResult(passwordViewIntent, VIEW_PASSWORD_REQUEST)
     }
 
-    fun onNewPassword() {
-
+    private fun onNewPassword() {
+        val newPasswordIntent = Intent(this, PasswordEdit::class.java)
+        startActivity(newPasswordIntent)
     }
 
     fun showPasswordOptions() {
