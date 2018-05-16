@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
-import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
@@ -17,6 +16,8 @@ import android.view.View
 import android.widget.ListView
 import android.widget.TextView
 import com.afollestad.materialdialogs.MaterialDialog
+import com.getbase.floatingactionbutton.FloatingActionButton
+import com.getbase.floatingactionbutton.FloatingActionsMenu
 import hughjd.xyz.aperio.Development
 import hughjd.xyz.aperio.R
 import hughjd.xyz.aperio.password.Password
@@ -31,6 +32,8 @@ class PasswordList : AppCompatActivity() {
 
     private lateinit var clearSearch: MenuItem
 
+    private lateinit var clearSearchFab: FloatingActionButton
+
     private lateinit var searchTextLayout: ConstraintLayout
 
     private lateinit var searchTextView: TextView
@@ -43,15 +46,18 @@ class PasswordList : AppCompatActivity() {
         title = "All Passwords"
         registerPasswordListener()
 
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        val toolbar = findViewById<Toolbar>(R.id.password_list_toolbar)
         setSupportActionBar(toolbar)
 
-        val fabNewPassword = findViewById<FloatingActionButton>(R.id.fab_new_password)
+        // set fab click listeners
+        val fabNewPassword = findViewById<FloatingActionButton>(R.id.password_list_fab_new)
         fabNewPassword.setOnClickListener { onNewPassword() }
-
-        val fabSearch = findViewById<FloatingActionButton>(R.id.fab_search)
+        val fabSearch = findViewById<FloatingActionButton>(R.id.password_list_fab_search)
         fabSearch.setOnClickListener { onClickSearch() }
+        clearSearchFab = findViewById(R.id.password_list_fab_clear_search)
+        clearSearchFab.setOnClickListener { onClearSearch() }
 
+        val fabMenu = findViewById<FloatingActionsMenu>(R.id.password_list_fab_menu)
         listView = findViewById(R.id.passwords_view)
 
         searchTextLayout = layoutInflater.inflate(R.layout.search_text_view, null) as ConstraintLayout
@@ -61,7 +67,7 @@ class PasswordList : AppCompatActivity() {
         adapter = PasswordListAdapter(getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater)
         listView.adapter = adapter
 
-        // click listeners. subtract 1 from position to account for the search text headerview in the first position (even if not shown)
+        // subtract 1 from position to account for the search text headerview in the first position (even if not shown)
         listView.setOnItemClickListener { _, _, position, _ -> onViewPassword(adapter.getItem(position - 1)) }
 
         // todo remove
@@ -102,10 +108,10 @@ class PasswordList : AppCompatActivity() {
 
     private fun onClickSearch() {
         MaterialDialog.Builder(this)
-            .title("Search")
-            .content("Search for a password by partial name")
-            .inputType(InputType.TYPE_CLASS_TEXT)
-            .input("", "", { _, input -> onApplySearch(input) }).show()
+                .title("Search")
+                .content("Search for a password by partial name")
+                .inputType(InputType.TYPE_CLASS_TEXT)
+                .input("", "", { _, input -> onApplySearch(input) }).show()
     }
 
     private fun onApplySearch(input: CharSequence) {
@@ -113,12 +119,14 @@ class PasswordList : AppCompatActivity() {
         clearSearch.isEnabled = true
         searchTextView.text = getString(R.string.search_text_view_template, input)
         searchTextView.visibility = View.VISIBLE
+        clearSearchFab.visibility = View.VISIBLE
     }
 
     private fun onClearSearch(): Boolean {
         adapter.clearFilters()
         clearSearch.isEnabled = false
         searchTextView.visibility = View.GONE
+        clearSearchFab.visibility = View.GONE
         return true
     }
 
