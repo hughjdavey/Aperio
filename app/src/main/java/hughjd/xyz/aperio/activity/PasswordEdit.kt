@@ -1,11 +1,9 @@
 package hughjd.xyz.aperio.activity
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Button
 import android.widget.CheckBox
 import android.widget.NumberPicker
 import android.widget.TextView
@@ -21,7 +19,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 
-class PasswordEdit : AppCompatActivity() {
+class PasswordEdit : AperioActivity() {
 
     private lateinit var nameField: PasswordFieldView
     private lateinit var usernameField: PasswordFieldView
@@ -83,7 +81,7 @@ class PasswordEdit : AppCompatActivity() {
 
     private fun saveOrUpdate(password: Password, editing: Boolean) {
         Single.fromCallable {
-            if (editing) Aperio.db?.passwordDao()?.update(password) else Aperio.db?.passwordDao()?.insert(password)
+            if (editing) PasswordList.db?.passwordDao()?.update(password) else PasswordList.db?.passwordDao()?.insert(password)
         }
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread()).subscribe()

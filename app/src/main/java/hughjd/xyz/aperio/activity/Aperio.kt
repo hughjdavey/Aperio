@@ -1,27 +1,55 @@
 package hughjd.xyz.aperio.activity
 
-import android.arch.persistence.room.Room
-import android.content.Intent
-import android.os.Bundle
+import android.app.Application
+import android.content.Context
 import android.support.v7.app.AppCompatActivity
-import hughjd.xyz.aperio.password.PasswordDb
+import android.text.InputType
+import android.widget.Toast
+import com.afollestad.materialdialogs.MaterialDialog
 import timber.log.Timber
 
-class Aperio : AppCompatActivity() {
+open class Aperio : Application(), LifecycleDelegate {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        Aperio.db =  Room.databaseBuilder(this, PasswordDb::class.java, "pdb").build()
+    override fun onCreate() {
+        super.onCreate()
+        val lifeCycleHandler = ApplicationLifecycleHandler(this)
+        registerActivityLifecycleCallbacks(lifeCycleHandler)
+        registerComponentCallbacks(lifeCycleHandler)
+    }
 
-        Timber.plant(Timber.DebugTree())
+    override fun onAppForegrounded() {
+        Timber.d("App placed in foreground - authentication needed")
+    }
 
-        val passwordListIntent = Intent(this, PasswordList::class.java)
-        // these flags mean that pressing back button or PasswordList#finish does NOT bring user back here
-        passwordListIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-        startActivity(passwordListIntent)
+    override fun onAppBackgrounded() {
+        Timber.d("App placed in background")
+        authenticationNeeded = true
     }
 
     companion object {
-        var db: PasswordDb? = null
+
+        var authenticationNeeded = true
+
+        fun showAuthenticationDialog(context: Context) {
+            MaterialDialog.Builder(context)
+                    .cancelable(false)
+                    .title("Log in")
+                    .inputType(InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD)
+                    .input("Enter password", "", { _, input -> onAuthenticate(input.toString(), context) })
+                    .show()
+        }
+
+        private fun onAuthenticate(password: String, context: Context) {
+            when (password) {
+                "hello" -> {
+                    Toast.makeText(context, "Authenticated", Toast.LENGTH_SHORT).show()
+                    authenticationNeeded = false
+                }
+                else -> {
+                    Toast.makeText(context, "Incorrect password", Toast.LENGTH_SHORT).show()
+                    (context as AppCompatActivity).finish()
+                }
+            }
+        }
     }
 }

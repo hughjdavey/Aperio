@@ -6,7 +6,6 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.Toast
@@ -16,14 +15,11 @@ import hughjd.xyz.aperio.R
 import hughjd.xyz.aperio.password.Password
 import hughjd.xyz.aperio.view.PasswordFieldView
 
-class PasswordView : AppCompatActivity() {
+class PasswordView : AperioActivity() {
 
     private lateinit var usernameField: PasswordFieldView
-
     private lateinit var emailField: PasswordFieldView
-
     private lateinit var passwordField: PasswordFieldView
-
     private lateinit var urlField: PasswordFieldView
 
     override fun onCreate(savedInstanceState: Bundle?) {

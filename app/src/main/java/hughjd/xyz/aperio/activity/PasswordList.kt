@@ -1,12 +1,12 @@
 package hughjd.xyz.aperio.activity
 
 import android.app.Activity
+import android.arch.persistence.room.Room
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
 import android.support.design.widget.Snackbar
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.text.InputType
 import android.view.LayoutInflater
@@ -21,30 +21,30 @@ import com.getbase.floatingactionbutton.FloatingActionsMenu
 import hughjd.xyz.aperio.Development
 import hughjd.xyz.aperio.R
 import hughjd.xyz.aperio.password.Password
+import hughjd.xyz.aperio.password.PasswordDb
 import hughjd.xyz.aperio.password.PasswordListAdapter
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
 
-class PasswordList : AppCompatActivity() {
+class PasswordList : AperioActivity() {
 
     private lateinit var listView: ListView
-
     private lateinit var clearSearch: MenuItem
-
     private lateinit var clearSearchFab: FloatingActionButton
-
     private lateinit var searchTextLayout: ConstraintLayout
-
     private lateinit var searchTextView: TextView
-
     private lateinit var adapter: PasswordListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_password_list)
         title = "All Passwords"
+
+        PasswordList.db =  Room.databaseBuilder(this, PasswordDb::class.java, "pdb").build()
         registerPasswordListener()
+        Timber.plant(Timber.DebugTree())
 
         val toolbar = findViewById<Toolbar>(R.id.password_list_toolbar)
         setSupportActionBar(toolbar)
@@ -146,7 +146,7 @@ class PasswordList : AppCompatActivity() {
     }
 
     private fun registerPasswordListener() {
-        Aperio.db?.passwordDao()?.getAll()
+        PasswordList.db?.passwordDao()?.getAll()
             ?.subscribeOn(Schedulers.io())
             ?.observeOn(AndroidSchedulers.mainThread())
             ?.subscribe { listOfPasswords ->
@@ -157,8 +157,8 @@ class PasswordList : AppCompatActivity() {
     // todo remove before release!
     private fun injectTestData() {
         Single.fromCallable {
-            Aperio.db?.passwordDao()?.deleteAll()
-            Aperio.db?.passwordDao()?.insertAll(Development.testPasswords())
+            PasswordList.db?.passwordDao()?.deleteAll()
+            PasswordList.db?.passwordDao()?.insertAll(Development.testPasswords())
         }
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread()).subscribe()
@@ -168,5 +168,7 @@ class PasswordList : AppCompatActivity() {
     companion object {
 
         private const val VIEW_PASSWORD_REQUEST = 1337
+
+        var db: PasswordDb? = null
     }
 }
